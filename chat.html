@@ -20,11 +20,16 @@
 <body>
 
 <div class="header">
-    <h3>Gold Shield Global</h3>
+    <h3 id="chatTitle">Gold Shield Global</h3>
     <div>
         <button onclick="startCall('audio')">📞 Аудио</button>
         <button onclick="startCall('video')">📹 Видео</button>
-        <a href="index.html" style="color: gold; text-decoration: solid; font-size: 18px;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">❌ Чиқиш</a>
+        <select onchange="changeLanguage(this.value)" id="langSelect">
+            <option value="uz">O'zbekcha</option>
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+        </select>
+        <button id="exitBtn" onclick="exitChat()">Чиқиш</button>
     </div>
 </div>
 
@@ -33,12 +38,14 @@
         <div id="meet" style="display:none; height:400px; border-bottom: 2px solid #003366;"></div>
         <div id="chat-window"></div>
         <div class="input-area">
-            <input type="text" id="msgInput" style="flex:1" placeholder="Хабар..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">Юбориш</button>
+            <input type="text" id="msgInput" style="flex:1" placeholder="..." 
+       onkeydown="if(event.key === 'Enter') sendMessage()">
+            
+            <button id="sendBtn" onclick="sendMessage()">Юбориш</button>
         </div>
     </div>
     <div id="user-list">
-        <h4>Иштирокчилар</h4>
+        <h4 id="participantTitle">Иштирокчилар</h4>
         <div><span class="status-dot" style="background:#28a745;"></span> Мен (Онлайн)</div>
     </div>
 </div>
@@ -48,20 +55,45 @@
     firebase.initializeApp(config);
     const db = firebase.firestore();
 
-    // 1. Қўнғироқ функцияси
+    // Тил созламалари
+    const translations = {
+        uz: { chatTitle: "Gold Shield Global", sendBtn: "Юбориш", msgPlaceholder: "Хабарни киритинг...", participants: "Иштирокчилар", exit: "Чиқиш" },
+        ru: { chatTitle: "Gold Shield Global", sendBtn: "Отправить", msgPlaceholder: "Введите сообщение...", participants: "Участники", exit: "Выход" },
+        en: { chatTitle: "Gold Shield Global", sendBtn: "Send", msgPlaceholder: "Enter message...", participants: "Participants", exit: "Exit" }
+    };
+
+    function updateUI(lang) {
+        const t = translations[lang] || translations.uz;
+        document.getElementById("chatTitle").innerText = t.chatTitle;
+        document.getElementById("sendBtn").innerText = t.sendBtn;
+        document.getElementById("msgInput").placeholder = t.msgPlaceholder;
+        document.getElementById("participantTitle").innerText = t.participants;
+        document.getElementById("exitBtn").innerText = t.exit;
+    }
+
+    function changeLanguage(lang) {
+        localStorage.setItem("selectedLang", lang);
+        updateUI(lang);
+    }
+
+    // Ишга тушишда сақланган тилни ўқиш
+    window.onload = () => {
+        const savedLang = localStorage.getItem("selectedLang") || "uz";
+        document.getElementById("langSelect").value = savedLang;
+        updateUI(savedLang);
+    };
+
     window.startCall = function(type) {
         const meetDiv = document.getElementById('meet');
         meetDiv.style.display = 'block';
         const api = new JitsiMeetExternalAPI("meet.jit.si", {
-            roomName: 'GoldShieldGlobalRoom',
-            parentNode: meetDiv,
+            roomName: 'GoldShieldGlobalRoom', parentNode: meetDiv,
             configOverwrite: { startWithVideoMuted: (type === 'audio'), disableDeepLinking: true },
             interfaceConfigOverwrite: { SHOW_JITSI_WATERMARK: false, SHOW_POWERED_BY: false, SHOW_BRAND_WATERMARK: false }
         });
         api.addListener('videoConferenceLeft', () => { meetDiv.style.display = 'none'; meetDiv.innerHTML = ""; });
     };
 
-    // 2. Хабар юбориш
     window.sendMessage = () => {
         const input = document.getElementById("msgInput");
         if (input.value.trim() !== "") {
@@ -70,14 +102,15 @@
         }
     };
 
-    // 3. Чатни янгилаб туриш
     db.collection("chats").orderBy("timestamp", "asc").onSnapshot(snap => {
         const win = document.getElementById("chat-window");
         win.innerHTML = "";
-        snap.forEach(doc => { win.innerHTML += `<div>${doc.data().text}</div>`; });
+        snap.forEach(doc => { 
+            win.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee;">${doc.data().text}</div>`; 
+        });
     });
 
-    window.exitChat = () => { localStorage.clear(); location.reload(); };
+    window.exitChat = () => { localStorage.clear(); window.location.href = "index.html"; };
 </script>
 </body>
 </html>

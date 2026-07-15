@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Admin Panel</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .admin-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: 1px solid #D4AF37;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Admin & Developer Control Panel</h1>
+
+<div class="grid-container">
+    <div class="admin-card">
+        <h3>Чат суҳбатлари</h3>
+        <p>Жами: <b>1,245</b></p>
+        <p>Ўртача давомийлик: <b>12 мин</b></p>
+    </div>
+
+    <div class="admin-card">
+        <h3>Фойдаланувчилар (ID/Phone)</h3>
+        <p>Марказий Осиё фаоллиги: <b>85%</b></p>
+        <button>Харитани кўриш</button>
+    </div>
+
+    <div class="admin-card">
+        <h3>Медиа ресурслар</h3>
+        <p>Видео: <b>500 соат</b></p>
+        <p>Овоз: <b>1,200 соат</b></p>
+        <p>Ҳужжатлар: <b>45 ГБ</b></p>
+    </div>
+</div>
+
+<script>
+    // Ҳимоя коди: Агар рол 'developer' бўлмаса, index.html га жўнат
+    const isAdmin = localStorage.getItem("role"); 
+    if (isAdmin !== "developer") {
+        alert("Кириш тақиқланади!"); // Фойдаланувчига хабар бериш
+        window.location.href = "index.html"; 
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Тасдиқлаш | Gold Shield</title>
+    <style>
+        body {
+            background: url('https://i.pinimg.com/736x/c3/29/d6/c329d64a30e583a583130d9ebdef7a8f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .glass-shell {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            width: 300px;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-align: center;
+            font-size: 20px;
+            letter-spacing: 10px;
+        }
+
+        .action-button {
+            background: #D4AF37;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-shell">
+    <h2>Тасдиқлаш</h2>
+    <p>Телефонингизга келган кодни киритинг</p>
+    
+    <input type="text" maxlength="4" id="otp-code" placeholder="----">
+    
+    <button onclick="verifyCode()" class="action-button">КИРИШ</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAUtEbaQy4Xsbf26qoJfIc_biHCl2Yo2OM",
+        authDomain: "gold-shield-b97ad.firebaseapp.com",
+        projectId: "gold-shield-b97ad",
+        storageBucket: "gold-shield-b97ad.firebasestorage.app",
+        messagingSenderId: "603859006579",
+        appId: "1:603859006579:web:95ae1b041f53dea252e606"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.verifyCode = function() {
+        const code = document.getElementById('otp-code').value;
+        
+        // window.confirmationResult бу index.html дан келган Firebase объект
+        window.confirmationResult.confirm(code)
+            .then((result) => {
+                const user = result.user;
+                alert("Муваффақиятли кирдингиз!");
+                window.location.href = "dashboard.html";
+            }).catch((error) => {
+                console.error(error);
+                alert("Код нотўғри ёки муддати ўтган!");
+            });
+    }
+</script>
+
+</body>
+</html>

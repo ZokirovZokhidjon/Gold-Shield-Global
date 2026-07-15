@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Аудио/Видео Чат | Gold Shield</title>
+    <style>
+        body {
+            background: url('https://i.pinimg.com/736x/c3/29/d6/c329d64a30e583a583130d9ebdef7a8f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .call-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            color: white;
+            width: 350px;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-call { background: #28a745; color: white; }
+        .btn-end { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="call-card">
+    <h2>Алоқа маркази</h2>
+    <p id="status">Тайёр ҳолатда...</p>
+    
+    <div>
+        <button class="action-btn btn-call" onclick="makeCall('video')">🎥 Видео Чат</button>
+        <button class="action-btn btn-call" onclick="makeCall('audio')">📞 Аудио</button>
+    </div>
+    <button class="action-btn btn-end" onclick="window.location.href='dashboard.html'">Чиқиш</button>
+</div>
+
+<script>
+    function makeCall(type) {
+        document.getElementById('status').textContent = (type === 'video' ? "Видео" : "Аудио") + " уланмоқда...";
+        // Бу ерда WebRTC ёки Socket.io логикаси бўлади
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Бошқарув панели | Gold Shield</title>
+    <style>
+        body {
+            background: url('https://i.pinimg.com/736x/c3/29/d6/c329d64a30e583a583130d9ebdef7a8f.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-top: 100px;
+        }
+
+        .glass-shell {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 15px 40px;
+            border-radius: 50px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 250px;
+        }
+
+        .action-button {
+            background: #D4AF37;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <div class="glass-shell">
+        <nav class="nav-menu">
+            <button onclick="sendTestMessage()">Тест хабарини юбориш</button>
+            <a href="dashboard.html" style="color: #333; text-decoration: none; font-weight: bold;">Бош саҳифа</a><br>
+            <button onclick="logout()" style="background:none; border:none; cursor:pointer; font-weight:bold; color:#333;">ЧИҚИШ</button>
+        </nav>
+
+        <div style="display: flex; gap: 30px;">
+            <div class="glass-card">
+                <h2 style="color: #333; margin: 0;">ЁЗИШМАЛАР</h2>
+                <p style="color: #555; font-size: 14px;">Хавфсиз матнли алоқа.</p>
+                <a href="chat.html" class="action-button">КИРИШ</a>
+            </div>
+
+            <div class="glass-card">
+                <h2 style="color: #333; margin: 0;">АУДИО/ВИДЕО</h2>
+                <p style="color: #555; font-size: 14px;">Онлайн қўнғироқлар.</p>
+                <a href="calls.html" class="action-button">УЛАНИШ</a>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+    </div>
+</div>
+<script type="module">
+  // 1. Барча импортлар
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // 2. Янги конфигурация
+  const firebaseConfig = {
+      apiKey: "AIzaSyAuPWrC2sKYQuukdc5DEGgR2uduou3CX6U",
+      authDomain: "gshn-70234.firebaseapp.com",
+      projectId: "gshn-70234",
+      storageBucket: "gshn-70234.firebasestorage.app",
+      messagingSenderId: "241219226789",
+      appId: "1:241219226789:web:af19a95f91a30781aa114c",
+      measurementId: "G-S07M2Z9689"
+  };
+
+  // 3. Инициализация
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // 4. Функциялар
+  window.sendTestMessage = async function() {
+      try {
+          await addDoc(collection(db, "chats"), {
+              text: "Salom, bu mening birinchi xabarim!",
+              timestamp: new Date()
+          });
+          alert("Xabar bazaga yuborildi!");
+      } catch (e) {
+          alert("Хатолик: " + e.message);
+      }
+  }
+
+  window.logout = function() {
+      signOut(auth).then(() => { window.location.href = "index.html"; });
+  }
+
+  // 5. Хавфсизлик текшируви
+  onAuthStateChanged(auth, (user) => {
+      if (!user) { window.location.href = "index.html"; }
+  });
+</script>
+</body>
+</html>

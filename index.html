@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Gold Shield | Global Platform</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        .lang-select { margin-bottom: 20px; }
+        h2 { color: #2b5278; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #db4437; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <div class="lang-select">
+        <select id="langSelector" onchange="changeLanguage()">
+            <option value="uz">🇺🇿 O'zbekcha</option>
+            <option value="ru">🇷🇺 Русский</option>
+            <option value="en">🇬🇧 English</option>
+        </select>
+    </div>
+    <h2 id="title">Gold Shield International</h2>
+    <p id="desc">Инсон ҳуқуқлари фаоллари ва журналистлар учун.</p>
+    <button id="loginBtn" onclick="loginWithGoogle()">Google орқали кириш</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAuPWrC2sKYQuukdc5DEGgR2uduou3CX6U",
+        authDomain: "gshn-70234.firebaseapp.com",
+        projectId: "gshn-70234",
+        storageBucket: "gshn-70234.firebasestorage.app",
+        messagingSenderId: "241219226789",
+        appId: "1:241219226789:web:af19a95f91a30781aa114c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const translations = {
+        uz: { title: "Gold Shield International", desc: "Инсон ҳуқуқлари фаоллари ва журналистлар учун.", btn: "Google орқали кириш" },
+        ru: { title: "Gold Shield International", desc: "Для правозащитников и журналистов.", btn: "Войти через Google" },
+        en: { title: "Gold Shield International", desc: "For human rights defenders and journalists.", btn: "Sign in with Google" }
+    };
+
+    window.changeLanguage = () => {
+        const lang = document.getElementById("langSelector").value;
+        document.getElementById("title").innerText = translations[lang].title;
+        document.getElementById("desc").innerText = translations[lang].desc;
+        document.getElementById("loginBtn").innerText = translations[lang].btn;
+    };
+
+    window.loginWithGoogle = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).then(() => {
+            window.location.href = "chat.html";
+        });
+    };
+</script>
+</body>
+</html>

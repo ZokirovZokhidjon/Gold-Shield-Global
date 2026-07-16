@@ -48,9 +48,10 @@
         <div id="meet" style="display:none; height:300px; border-bottom: 2px solid #003366;"></div>
         <div id="chat-window"></div>
         <div class="input-area">
-            <input type="text" id="msgInput" style="flex:1; padding:10px;" placeholder="...">
-            <button id="sendBtn" onclick="sendMessage()">Юбориш</button>
-        </div>
+    <input type="text" id="msgInput" style="flex:1; padding:10px; font-size: 16px;" placeholder="..." 
+           onkeydown="if(event.key === 'Enter') sendMessage()">
+    <button id="sendBtn" onclick="sendMessage()">Юбориш</button>
+</div>
     </div>
     <div id="user-list">
         <h4 id="participantTitle">Иштирокчилар</h4>
@@ -100,13 +101,17 @@
         api.addListener('videoConferenceLeft', () => { meetDiv.style.display = 'none'; meetDiv.innerHTML = ""; });
     };
 
-    window.sendMessage = () => {
-        const input = document.getElementById("msgInput");
-        if (input.value.trim() !== "") {
-            db.collection("chats").add({ text: input.value, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-            input.value = "";
-        }
-    };
+window.sendMessage = () => {
+    const input = document.getElementById("msgInput");
+    if (input.value.trim() !== "") {
+        db.collection("chats").add({ 
+            text: input.value, 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+        });
+        input.value = "";
+        input.focus(); // Хабар жўнатилгандан кейин инпутга фокусни қайтаради
+    }
+};
 
     db.collection("chats").orderBy("timestamp", "asc").onSnapshot(snap => {
         const win = document.getElementById("chat-window");

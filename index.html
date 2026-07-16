@@ -2,13 +2,48 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <!-- Муҳим: Мобил қурилмалар учун -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Shield | Global Platform</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif;background-image: url(01.jpeg);background-size: cover; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card {background-image: url(  02.jpg); background-size: cover; padding: 40px; border-radius: 15px; border-style: groove; border-color: gold; box-shadow: 0 10px 25px rgba(196, 194, 194, 0.1); width: 350px; text-align: center; }
+        body { 
+            font-family: 'Segoe UI', sans-serif;
+            background-image: url(01.jpeg);
+            background-size: cover; 
+            background-position: center;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+        .auth-card {
+            background-image: url(02.jpg); 
+            background-size: cover; 
+            padding: 30px; 
+            border-radius: 15px; 
+            border: 2px groove gold; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); 
+            width: 90%; /* Мобил учун фоиз */
+            max-width: 350px; /* Компьютер учун чеклов */
+            text-align: center; 
+        }
         .lang-select { margin-bottom: 20px; }
-        h2 { color:red; text-shadow: 3px 4px 6px;}
-        button { width: 100%; padding: 12px; margin-top: 15px; border: none; border-radius: 8px; border-color: red; border-style: solid; cursor: pointer; font-weight: bold; background: #db4437; color: white; }
+        h2 { color: red; text-shadow: 1px 1px 2px white; margin-bottom: 15px; }
+        .desc-text { font-size: 15px; color: #000; margin: 10px 0; line-height: 1.4; }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px; 
+            border: 2px solid red; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            background: #db4437; 
+            color: white; 
+            transition: 0.3s;
+        }
+        button:hover { background: #c23321; }
     </style>
 </head>
 <body>
@@ -22,14 +57,16 @@
         </select>
     </div>
     <h2 id="title">Gold Shield International</h2>
-    <p id="desc" style="font-size: 16px; color: rgb(5, 5, 5);"> <b> "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа". </b> </p>  
-      <p style="font-size: 16px;"> <b>"Платформа для правозащитников и журналистов."</b></p>
-    <p style="font-size: 16px;"> <b> "A platform for human rights defenders and journalists." </b></p> 
-    </p>
+    
+    <div id="desc-container">
+        <p class="desc-text" id="desc"> <b>"Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа".</b></p>
+    </div>
+
     <button id="loginBtn" onclick="loginWithGoogle()">Google орқали кириш</button>
 </div>
 
 <script type="module">
+    // Firebase қисми ўзгаришсиз қолди
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -46,9 +83,9 @@
     const auth = getAuth(app);
 
     const translations = {
-        uz: { title: "Gold Shield International", desc: "Инсон ҳуқуқлари фаоллари ва журналистлар учун.", btn: "Google орқали кириш" },
-        ru: { title: "Gold Shield International", desc: "Для правозащитников и журналистов.", btn: "Войти через Google" },
-        en: { title: "Gold Shield International", desc: "For human rights defenders and journalists.", btn: "Sign in with Google" }
+        uz: { title: "Gold Shield International", desc: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", btn: "Google орқали кириш" },
+        ru: { title: "Gold Shield International", desc: "Специализированная платформа для правозащитников и журналистов.", btn: "Войти через Google" },
+        en: { title: "Gold Shield International", desc: "A specialized platform for human rights defenders and journalists.", btn: "Sign in with Google" }
     };
 
     window.changeLanguage = () => {

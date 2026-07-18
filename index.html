@@ -4,135 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Shield | Global Platform</title>
-    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROVKAyDYZcz7em45JvQqcgeVTfZkgoE2uZnMDoeIS7tg&s=10" type="image/x-icon">
-    <!-- Google Fonts орқали чиройли шрифт ва иконкалар -->
-    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { 
-            background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%);
-            border-radius: 50%;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding: 20px;
-        }
-        .auth-card {
-    /* Градиентни бироз совуқроқ ва чуқурроқ қиламиз */
-    background: linear-gradient(135deg, rgba(70, 70, 90, 0.8) 0%, rgba(26, 26, 36, 0.95) 100%);
-    
-    /* Эффектлар */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    
-    /* Чегараларни замонавийлаштириш */
-    padding: 40px 30px; 
-    border-radius: 24px; 
-    border: 1px solid rgba(212, 175, 55, 0.3); /* Юмшоқ олтин ранг */
-    
-    /* Соя ва ёруғлик */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1); 
-    
-    width: 100%; 
-    max-width: 400px; 
-    text-align: center; 
-    transition: all 0.4s ease;
-}
-
-.auth-card:hover {
-    border-color: rgba(212, 175, 55, 0.8); /* Ҳоверда олтин ранг ёрқинлашади */
-    box-shadow: 0 15px 40px rgba(0,0,0,0.7);
-}
-        .lang-select-wrapper {
-            display: inline-block;
-            position: relative;
-            margin-bottom: 30px;
-        }
-        .lang-select { 
-            background: rgba(255, 255, 255, 0.05);
-            color: #c48787;
-            border: 5px solid rgba(177, 126, 126, 0.1);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            padding-right: 32px;
-        }
-        .lang-select-wrapper::after {
-            content: '▼';
-            font-size: 10px;
-            color: #d4d4b3;
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-        }
-        h2 { 
-            color: #ffffff; 
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 12px; 
-            letter-spacing: -0.5px;
-        }
-        h2 span {
-            color: #e00b0b; /* Олтин ранг */
-            text-shadow: 0 0 15px rgba(230, 10, 10, 0.3);
-        }
-        .desc-text { 
-            font-size: 14px; 
-            color:gold; 
-            margin-bottom: 35px; 
-            line-height: 1.6; 
-        }
-        .google-btn { 
-            width: 100%; 
-            padding: 14px; 
-            border: none; 
-            border-radius: 14px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 18px;
-            background: #e11d48; /* Профессионал қизил */
-            color: white; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
-        }
-        .google-btn:hover { 
-            background: #be123c; 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(225, 29, 72, 0.4);
-        }
-        .google-btn:active { transform: translateY(0); }
-        .google-btn svg { width: 20px; height: 20px; fill: white; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-card { background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; max-width: 400px; text-align: center; color: white; }
+        .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .google-btn:hover { background: #be123c; }
+        .lang-select { background: rgba(255,255,255,0.1); color: rgb(230, 101, 101); padding: 8px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="auth-card">
-    <div class="lang-select-wrapper">
-        <select id="langSelector" class="lang-select" onchange="changeLanguage()">
-            <option value="uz">🇺🇿 O'zbekcha</option>
-            <option value="ru">🇷🇺 Русский</option>
-            <option value="en">🇬🇧 English</option>
-        </select>
-    </div>
-    <h2 id="title">Gold Shield  International </h2>
-    
-    <p class="desc-text" id="desc">Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.</p>
+    <select id="langSelector" class="lang-select" onchange="changeLanguage()">
+        <option value="uz">🇺🇿 O'zbekcha</option>
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="en">🇬🇧 English</option>
+    </select>
+    <h2 id="title">Gold Shield International</h2>
+    <p id="desc" style="margin-bottom: 30px; color: gold;">Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.</p>
 
     <button id="loginBtn" class="google-btn" onclick="loginWithGoogle()">
-        <svg viewBox="0 0 24 24">
-            <path d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C17.955 2.192 15.34 1 12.24 1 6.16 1 1.24 5.92 1.24 12s4.92 11 11 11c6.35 0 10.57-4.47 10.57-10.76 0-.725-.075-1.275-.165-1.655H12.24z"/>
-        </svg>
         <span id="btnText">Google орқали кириш</span>
     </button>
 </div>
@@ -152,33 +44,32 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-    const translations = {
-        uz: { title: "Gold Shield <span>International</span>", desc: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", btn: "Google орқали кириш" },
-        ru: { title: "Gold Shield <span>International</span>", desc: "Специализированная платформа для правозащитников и журналистов.", btn: "Войти через Google" },
-        en: { title: "Gold Shield <span>International</span>", desc: "A specialized platform for human rights defenders and journalists.", btn: "Sign in with Google" }
-    };
-
+    // Til almashinish
     window.changeLanguage = () => {
         const lang = document.getElementById("langSelector").value;
-        document.getElementById("title").innerHTML = translations[lang].title;
-        document.getElementById("desc").innerText = translations[lang].desc;
-        document.getElementById("btnText").innerText = translations[lang].btn;
+        const trans = {
+            uz: { t: "Gold Shield International", d: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", b: "Google орқали кириш" },
+            ru: { t: "Gold Shield International", d: "Специализированная платформа для правозащитников и журналистов.", b: "Войти через Google" },
+            en: { t: "Gold Shield International", d: "Platform for human rights defenders and journalists.", b: "Sign in with Google" }
+        };
+        document.getElementById("title").innerText = trans[lang].t;
+        document.getElementById("desc").innerText = trans[lang].d;
+        document.getElementById("btnText").innerText = trans[lang].b;
     };
 
-    window.loginWithGoogle = () => {
-const provider = new GoogleAuthProvider();
-
-async function loginWithGoogle() {
-    try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        console.log("Хуш келибсиз, " + user.displayName);
-        // Бу ерда чат саҳифасига йўналтириш кодини қўшасиз
-    } catch (error) {
-        console.error("Киришда хатолик:", error);
-    }
-}
+    // Google orqali kirish funksiyasi
+    window.loginWithGoogle = async () => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            alert("Xush kelibsiz, " + result.user.displayName);
+            window.location.href = "chat.html"; // Muvaffaqiyatli kirgach chatga yo'naltiramiz
+        } catch (error) {
+            console.error("Xatolik:", error);
+            alert("Kirishda xatolik yuz berdi: " + error.message);
+        }
+    };
 </script>
 </body>
 </html>

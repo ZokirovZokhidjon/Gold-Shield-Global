@@ -35,6 +35,11 @@
             input.placeholder = window.isJoined ? "Хабар ёзиш..." : "Гуруҳдан чиқдингиз";
         };
 
+        // Агар фойдаланувчи тасдиқланмаган бўлса (localStorageда белги йўқ бўлса)
+    if (!localStorage.getItem("isAuthorized")) {
+        alert("Кириш рад этилди! Сизда рухсат йўқ.");
+        window.location.href = "index.html"; // Орқага қайтариб юборади
+    }
         window.loadMessages = (roomName = "General", joined = true) => {
             if (unsubscribe) { unsubscribe(); unsubscribe = null; }
             window.currentRoom = roomName;

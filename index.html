@@ -2,46 +2,57 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gold Shield | Global Platform</title>
-    <!-- EmailJS kutubxonasi -->
+    <title>Gold Shield | Security Auth</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){ emailjs.init("EmjeqopCgeeZoZdMR"); })();
+    </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .auth-card { background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; max-width: 400px; text-align: center; color: white; }
+        body { background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .auth-card { background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 400px; color: white; text-align: center; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); z-index: 1000; }
+        .modal-content { background: #1a1a24; padding: 30px; border-radius: 20px; border: 1px solid #fd51a7; width: 350px; text-align: center; color: white; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-send { background: #fd51a7; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; flex: 1; }
+        .btn-cancel { background: #444; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; flex: 1; }
         .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: white; }
-        .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; transition: 0.3s; }
-        .google-btn:hover { background: #be123c; }
-        .lang-select { background: rgba(255,255,255,0.1); color: rgb(230, 101, 101); padding: 8px; border-radius: 8px; margin-bottom: 20px; }
+        .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; margin-top: 10px; }
+        h2 { margin-bottom: 20px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="auth-card" id="auth-box">
-    <select id="langSelector" class="lang-select" onchange="changeLanguage()">
-        <option value="uz">🇺🇿 O'zbekcha</option>
-        <option value="ru">🇷🇺 Русский</option>
-        <option value="en">🇬🇧 English</option>
-    </select>
-    <h2 id="title">Gold Shield International</h2>
-    <p id="desc" style="margin-bottom: 30px; color: gold;">Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.</p>
+<div class="auth-card">
+    <div id="security-check">
+        <h2>Шахс идентификацияси</h2>
+        <input type="text" id="nameInput" class="input-field" placeholder="Исм шарифингиз">
+        <input type="tel" id="phoneInput" class="input-field" placeholder="+998901234567">
+        <button id="checkBtn" class="google-btn">Текшириш</button>
+    </div>
 
-    <input type="email" id="emailInput" class="input-field" placeholder="Pochtangizni kiriting...">
-    <button id="sendBtn" class="google-btn" onclick="sendVerification()">Tasdiqlash kodini olish</button>
-    
-    <div id="code-section" style="display:none; margin-top:20px;">
-        <input type="password" id="codeInput" class="input-field" placeholder="Тасдиқлаш кодини киритинг">
-        <button onclick="togglePassword()" style="background:none; border:none; color:gold; cursor:pointer; font-size:12px; margin-bottom:10px;">👁️ Кодни кўрсатиш</button>
-        <button class="google-btn" style="background: green;" onclick="verifyCode()">Kirish</button>
+    <div id="emailModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>Почтангизни киритинг</h3>
+            <input type="email" id="emailInput" class="input-field" placeholder="example@mail.com">
+            <div class="modal-actions">
+                <button id="cancelBtn" class="btn-cancel">Бекор</button>
+                <button id="sendBtn" class="btn-send">Юбориш</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-auth" class="hidden">
+        <h2>Тасдиқлаш</h2>
+        <input type="text" id="codeInput" class="input-field" placeholder="Код">
+        <button id="verifyBtn" class="google-btn" style="background: green;">Кириш</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-    // 1. EmailJS ni ishga tushirish
-    emailjs.init("EmjeqopCgeeZoZdMR"); 
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAuPWrC2sKYQuukdc5DEGgR2uduou3CX6U",
@@ -51,57 +62,50 @@
         messagingSenderId: "241219226789",
         appId: "1:241219226789:web:af19a95f91a30781aa114c"
     };
-    initializeApp(firebaseConfig);
 
+    initializeApp(firebaseConfig);
+    const db = getFirestore();
     let generatedCode = "";
 
-    // 2. FUNKSIYANI OLDIN YOZING
-    const generateCode = () => {
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let result = "";
-        for (let i = 0; i < 6; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
+    document.getElementById("checkBtn").addEventListener("click", async () => {
+        const name = document.getElementById("nameInput").value.toLowerCase().trim();
+        if (!name) { alert("Исмни киритинг!"); return; }
+        
+        try {
+            const q = query(collection(db, "blacklist"), where("name", "==", name));
+            const snapshot = await getDocs(q);
+            if (!snapshot.empty) { alert("Кириш рад этилди!"); return; }
+            document.getElementById("emailModal").classList.remove("hidden");
+        } catch (error) {
+            console.error("Firebase хатоси:", error);
+            alert("Интернет ёки база билан боғлиқ муаммо юз берди. Илтимос, кейинроқ уриниб кўринг.");
         }
-        return result;
-    };
+    });
 
-    // 3. Global funksiyalar (Window ga bog'lash)
-    window.sendVerification = () => {
+    document.getElementById("cancelBtn").addEventListener("click", () => document.getElementById("emailModal").classList.add("hidden"));
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
         const email = document.getElementById("emailInput").value;
-        if(email.includes("@")) {
-            generatedCode = generateCode(); // Endi bu funksiya aniq ko'rinadi
-            
-            // EMAILJS NI BU YERGA QO'YAMIZ
-            emailjs.send("service_5q8ltmp", "template_390cxcc", {
-    message: generatedCode,
-    email: email
-})
-            .then(() => {
-                alert("Kod pochtangizga yuborildi!");
-                document.getElementById("code-section").style.display = "block";
-                document.getElementById("sendBtn").style.display = "none";
-            }).catch((err) => {
-                console.error("EmailJS xatosi:", err);
-                alert("Xatolik yuz berdi.");
-            });
-        } else {
-            alert("To'g'ri pochta manzilini kiriting!");
-        }
-    };
+        if (!email) { alert("Почтани киритинг!"); return; }
+        generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        emailjs.send("service_5q8ltmp", "template_390cxcc", { to_email: email, message: generatedCode })
+        .then(() => {
+            alert("Код юборилди!");
+            document.getElementById("emailModal").classList.add("hidden");
+            document.getElementById("security-check").classList.add("hidden");
+            document.getElementById("main-auth").classList.remove("hidden");
+        }).catch(err => alert("Email юборишда хатолик: " + JSON.stringify(err)));
+    });
 
-    window.verifyCode = () => {
-        const inputCode = document.getElementById("codeInput").value.toUpperCase();
-        if(inputCode === generatedCode && inputCode !== "") {
+    document.getElementById("verifyBtn").addEventListener("click", () => {
+        if (document.getElementById("codeInput").value === generatedCode) {
+            localStorage.setItem("isAuthorized", "true"); 
             window.location.href = "chat.html";
         } else {
-            alert("Kod xato!");
+            alert("Код нотўғри!");
         }
-    };
-
-    window.togglePassword = () => {
-        const input = document.getElementById("codeInput");
-        input.type = (input.type === "password") ? "text" : "password";
-    };
+    });
 </script>
 </body>
 </html>

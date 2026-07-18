@@ -2,6 +2,8 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <!-- Мобил қурилмалар учун энг муҳим тег -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Shield | Security Auth</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
@@ -9,17 +11,41 @@
     </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-image: url(https://wallpapercave.com/wp/wp4020729.jpg);background-size: cover; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .auth-card { background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 400px; color: white; text-align: center; border: 1px solid rgba(212, 175, 55, 0.3); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); z-index: 1000; }
-        .modal-content { background: #1a1a24; padding: 30px; border-radius: 20px; border: 1px solid #fd51a7; width: 350px; text-align: center; color: white; }
+        body { 
+            background-image: url(https://wallpapercave.com/wp/wp4020729.jpg);
+            background-size: cover; 
+            background-position: center;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            padding: 20px; /* Мобилда экранга ёпишиб қолмаслиги учун */
+        }
+        .auth-card { 
+            background: rgba(26, 26, 36, 0.95); 
+            padding: 40px 30px; 
+            border-radius: 24px; 
+            width: 100%; 
+            max-width: 400px; 
+            color: white; 
+            text-align: center; 
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); z-index: 1000; padding: 15px; }
+        .modal-content { background: #1a1a24; padding: 30px; border-radius: 20px; border: 1px solid #fd51a7; width: 100%; max-width: 350px; text-align: center; color: white; }
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .btn-send { background: #fd51a7; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; flex: 1; }
         .btn-cancel { background: #444; border: none; padding: 10px 20px; border-radius: 8px; color: white; cursor: pointer; flex: 1; }
         .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: white; }
         .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; margin-top: 10px; }
-        h2 { margin-bottom: 20px; }
+        h2 { margin-bottom: 20px; font-size: 1.5rem; }
         .hidden { display: none; }
+
+        /* Мобил қурилмалар учун мослашув */
+        @media (max-width: 480px) {
+            .auth-card { padding: 25px 20px; }
+            h2 { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -78,7 +104,7 @@
             document.getElementById("emailModal").classList.remove("hidden");
         } catch (error) {
             console.error("Firebase хатоси:", error);
-            alert("Интернет ёки база билан боғлиқ муаммо юз берди. Илтимос, кейинроқ уриниб кўринг.");
+            alert("Интернет ёки база билан боғлиқ муаммо юз берди.");
         }
     });
 

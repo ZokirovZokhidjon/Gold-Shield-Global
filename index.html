@@ -4,20 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Shield | Global Platform</title>
-    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGY8okAlFy_fZnK6D9Ja-zrlb-eN_96dyhI_yV1_MWPOj3WxAQmawkxWju&s=10" type="image/x-icon">
-
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .auth-card { background: rgba(26, 26, 36, 0.95); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.3); width: 100%; max-width: 400px; text-align: center; color: white; }
-        .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: white; }
+        .google-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; background: #e11d48; color: white; font-weight: 600; transition: 0.3s; }
         .google-btn:hover { background: #be123c; }
         .lang-select { background: rgba(255,255,255,0.1); color: rgb(230, 101, 101); padding: 8px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div class="auth-card">
+<div class="auth-card" id="auth-box">
     <select id="langSelector" class="lang-select" onchange="changeLanguage()">
         <option value="uz">🇺🇿 O'zbekcha</option>
         <option value="ru">🇷🇺 Русский</option>
@@ -26,14 +25,20 @@
     <h2 id="title">Gold Shield International</h2>
     <p id="desc" style="margin-bottom: 30px; color: gold;">Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.</p>
 
-    <button id="loginBtn" class="google-btn" onclick="loginWithGoogle()">
-        <span id="btnText">Google орқали кириш</span>
-    </button>
+    <!-- Email kiritish -->
+    <input type="email" id="emailInput" class="input-field" placeholder="Pochtangizni kiriting...">
+    <button id="sendBtn" class="google-btn" onclick="sendVerification()">Tasdiqlash kodini olish</button>
+    
+    <!-- Kod kiritish qismi -->
+    <div id="code-section" style="display:none; margin-top:20px;">
+        <input type="password" id="codeInput" class="input-field" placeholder="Тасдиқлаш кодини киритинг">
+        <button onclick="togglePassword()" style="background:none; border:none; color:gold; cursor:pointer; font-size:12px; margin-bottom:10px;">👁️ Кодни кўрсатиш</button>
+        <button class="google-btn" style="background: green;" onclick="verifyCode()">Kirish</button>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAuPWrC2sKYQuukdc5DEGgR2uduou3CX6U",
@@ -43,34 +48,44 @@
         messagingSenderId: "241219226789",
         appId: "1:241219226789:web:af19a95f91a30781aa114c"
     };
+    initializeApp(firebaseConfig);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    // Til almashinish
+    // Global funksiyalar
     window.changeLanguage = () => {
         const lang = document.getElementById("langSelector").value;
         const trans = {
-            uz: { t: "Gold Shield International", d: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", b: "Google орқали кириш" },
-            ru: { t: "Gold Shield International", d: "Специализированная платформа для правозащитников и журналистов.", b: "Войти через Google" },
-            en: { t: "Gold Shield International", d: "Platform for human rights defenders and journalists.", b: "Sign in with Google" }
+            uz: { t: "Gold Shield International", d: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", b: "Tasdiqlash kodini olish" },
+            ru: { t: "Gold Shield International", d: "Платформа для правозащитников и журналистов.", b: "Получить код" },
+            en: { t: "Gold Shield International", d: "Platform for human rights defenders and journalists.", b: "Get verification code" }
         };
         document.getElementById("title").innerText = trans[lang].t;
         document.getElementById("desc").innerText = trans[lang].d;
-        document.getElementById("btnText").innerText = trans[lang].b;
+        document.getElementById("sendBtn").innerText = trans[lang].b;
     };
 
-    // Google orqali kirish funksiyasi
-    window.loginWithGoogle = async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            alert("Xush kelibsiz, " + result.user.displayName);
-            window.location.href = "chat.html"; // Muvaffaqiyatli kirgach chatga yo'naltiramiz
-        } catch (error) {
-            console.error("Xatolik:", error);
-            alert("Kirishda xatolik yuz berdi: " + error.message);
+    window.sendVerification = () => {
+        const email = document.getElementById("emailInput").value;
+        if(email.includes("@")) {
+            alert("Kod pochtangizga yuborildi (simulyatsiya: 123456)");
+            document.getElementById("code-section").style.display = "block";
+            document.getElementById("sendBtn").style.display = "none";
+        } else {
+            alert("To'g'ri pochta manzilini kiriting!");
         }
+    };
+
+    window.verifyCode = () => {
+        const code = document.getElementById("codeInput").value;
+        if(code === "123456") {
+            window.location.href = "chat.html";
+        } else {
+            alert("Kod xato!");
+        }
+    };
+
+    window.togglePassword = () => {
+        const input = document.getElementById("codeInput");
+        input.type = (input.type === "password") ? "text" : "password";
     };
 </script>
 </body>

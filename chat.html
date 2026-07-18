@@ -22,7 +22,7 @@
         const db = getFirestore(app);
         
         window.currentRoom = "General";
-        window.isJoined = true; // Yangi holat
+        window.isJoined = true;
         window.jitsiApi = null;
         window.targetRoom = "";
         let unsubscribe = null; 
@@ -32,7 +32,7 @@
             const btn = document.getElementById("sendBtn");
             input.disabled = !window.isJoined;
             btn.disabled = !window.isJoined;
-            input.placeholder = window.isJoined ? "Хабар..." : "Гуруҳдан чиқдингиз...";
+            input.placeholder = window.isJoined ? "Хабар ёзиш..." : "Гуруҳдан чиқдингиз";
         };
 
         window.loadMessages = (roomName = "General", joined = true) => {
@@ -47,23 +47,44 @@
                 return;
             }
 
-            chatWindow.innerHTML = "<div style='text-align:center; padding:20px;'>Yuklanmoqda...</div>";
+            chatWindow.innerHTML = "<div style='text-align:center; padding:20px;'>Юкланмоқда...</div>";
             const q = query(collection(db, "groups", window.currentRoom, "messages"), orderBy("timestamp", "asc"));
+            
             unsubscribe = onSnapshot(q, (snap) => {
                 chatWindow.innerHTML = "";
                 snap.forEach(d => {
-                    chatWindow.innerHTML += `<div class="msg">${d.data().text || ''}</div>`;
+                    const data = d.data();
+                    const msgId = d.id;
+                    chatWindow.innerHTML += `
+                        <div class="msg">
+                            ${data.text || ''}
+                            <div style="margin-top: 5px; display: flex; gap: 10px;">
+                                <button onclick="editMessage('${msgId}', '${data.text.replace(/'/g, "\\'")}')" style="background:none; border:none; color:lightblue; cursor:pointer; font-size:11px;">Таҳрирлаш</button>
+                                <button onclick="deleteMessage('${msgId}')" style="background:none; border:none; color:salmon; cursor:pointer; font-size:11px;">Ўчириш</button>
+                            </div>
+                        </div>`;
                 });
                 chatWindow.scrollTop = chatWindow.scrollHeight;
             });
         };
 
-        window.exitGroup = () => { 
-            window.loadMessages("General", false); 
+        window.deleteMessage = async (msgId) => {
+            if (confirm("Хабарни ўчирмоқчимисиз?")) {
+                await deleteDoc(doc(db, "groups", window.currentRoom, "messages", msgId));
+            }
         };
 
+        window.editMessage = async (msgId, oldText) => {
+            const newText = prompt("Матнни таҳрирланг:", oldText);
+            if (newText && newText !== oldText) {
+                await setDoc(doc(db, "groups", window.currentRoom, "messages", msgId), { text: newText }, { merge: true });
+            }
+        };
+
+        window.exitGroup = () => { window.loadMessages("General", false); };
+
         window.startVideoCall = () => {
-            if (!window.isJoined) return alert("Гуруҳга кирмасдан видеоқўнғироқ қилиб бўлмайди!");
+            if (!window.isJoined) return alert("Аввал гуруҳга киринг!");
             document.getElementById("video-container").style.display = "block";
             const container = document.getElementById("video-container-frame");
             window.jitsiApi = new JitsiMeetExternalAPI("meet.jit.si", { 
@@ -94,9 +115,9 @@
         window.saveNewGroup = async () => {
             const name = document.getElementById("newGroupName").value.trim().replace(/\s+/g, '_');
             const pass = document.getElementById("newGroupPass").value.trim();
-            if (!name) return alert("Guruh nomi shart!");
+            if (!name) return alert("Гуруҳ номини киритинг!");
             await setDoc(doc(db, "groups", name), { createdAt: serverTimestamp(), password: pass });
-            await addDoc(collection(db, "groups", name, "messages"), { text: "Guruh yaratildi!", timestamp: serverTimestamp() });
+            await addDoc(collection(db, "groups", name, "messages"), { text: "Гуруҳ яратилди!", timestamp: serverTimestamp() });
             document.getElementById("create-modal").style.display = "none";
             document.getElementById("newGroupName").value = "";
         };
@@ -118,11 +139,11 @@
                 window.loadMessages(window.targetRoom, true);
                 document.getElementById("password-modal").style.display = "none";
                 document.getElementById("passInput").value = "";
-            } else { alert("❌ Parol noto‘g‘ri!"); }
+            } else { alert("❌ Парол нотўғри!"); }
         };
 
         window.deleteGroup = async (id) => { 
-            if(confirm("Guruhni o'chirmoqchimisiz?")) await deleteDoc(doc(db, "groups", id)); 
+            if(confirm("Гуруҳни ўчиришни хоҳлайсизми?")) await deleteDoc(doc(db, "groups", id)); 
         };
 
         onSnapshot(collection(db, "groups"), (snap) => {
@@ -146,7 +167,7 @@
         .group-item:hover { background: orangered; }
         #chat-area { flex: 1; display: flex; flex-direction: column; padding: 10px; overflow: hidden; }
         #chat-window { flex: 1; background: #182533; padding: 15px; overflow-y: auto; border-radius: 8px; margin-bottom: 10px; }
-        .msg { padding: 8px 0; border-bottom: 1px solid #101924; }
+        .msg { padding: 10px; border-bottom: 1px solid #101924; background: #242f3d; margin-bottom: 5px; border-radius: 5px; }
         .orange-btn { border-radius: 20px; width: 100%; height: 50px; background-color: orangered; border: none; color: white; font-weight: bold; cursor: pointer; }
         #video-container { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background: black; }
         #msgInput { padding: 10px; border-radius: 5px; border: none; width: 100%; box-sizing: border-box; }
@@ -163,8 +184,8 @@
         <div id="header-menu" style="background: #242f3d; padding: 10px; display: flex; justify-content: space-between; align-items:center;">
             <button onclick="startVideoCall()" style="background:orangered; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">🎥 Видео/Аудио</button>
             <div>
-                <button onclick="exitGroup()" style="background:gray; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Guruhdan chiqish</button>
-                <a href="index.html" style="background:red; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; margin-left:10px;">Tizimdan chiqish</a>
+                <button onclick="exitGroup()" style="background:gray; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Чиқиш</button>
+                <a href="index.html" style="background:red; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; margin-left:10px;">Тизимдан чиқиш</a>
             </div>
         </div>
         <div id="chat-window"></div>
@@ -175,22 +196,22 @@
     </div>
     <div id="video-container">
         <div id="video-container-frame" style="width:100%; height:100%;"></div>
-        <button onclick="stopVideoCall()" style="position:absolute; top:20px; right:20px; z-index:10001; padding:10px 20px; background:red; color:white; border:none; cursor:pointer;">X ЧИҚИШ</button>
+        <button onclick="stopVideoCall()" style="position:absolute; top:20px; right:20px; z-index:10001; padding:10px 20px; background:red; color:white; border:none; cursor:pointer;">❌ Ёпиш</button>
     </div>
     <div id="create-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
         <div style="background:#17212b; padding:30px; border-radius:15px; width:300px;">
-            <input type="text" id="newGroupName" placeholder="Guruh nomi..." style="width:100%; padding:10px; margin-bottom:10px;">
-            <input type="password" id="newGroupPass" placeholder="Parol (ixtiyoriy)..." style="width:100%; padding:10px; margin-bottom:10px;">
-            <button class="orange-btn" onclick="saveNewGroup()">Saqlash</button>
-            <button onclick="document.getElementById('create-modal').style.display='none'" style="width:100%; margin-top:10px; background:transparent; color:white; border:none;">Yopish</button>
+            <input type="text" id="newGroupName" placeholder="Гуруҳ номи..." style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="password" id="newGroupPass" placeholder="Парол (ихтиёрий)..." style="width:100%; padding:10px; margin-bottom:10px;">
+            <button class="orange-btn" onclick="saveNewGroup()">Сақлаш</button>
+            <button onclick="document.getElementById('create-modal').style.display='none'" style="width:100%; margin-top:10px; background:transparent; color:white; border:none; cursor:pointer;">Бекор қилиш</button>
         </div>
     </div>
     <div id="password-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000; justify-content:center; align-items:center;">
         <div style="background:#17212b; padding:30px; border-radius:15px; width:300px; text-align:center;">
-            <h3 style="color:white;">🔐 Parolni kiriting</h3>
+            <h3 style="color:white;">🔐 Паролни киритинг</h3>
             <input type="password" id="passInput" style="width:100%; padding:10px; margin:10px 0;">
-            <button class="orange-btn" onclick="checkGroupPassword()">Kirish</button>
-            <button onclick="document.getElementById('password-modal').style.display='none'; document.getElementById('passInput').value='';" style="width:100%; margin-top:10px; background:transparent; color:white; border:none; cursor:pointer;">Yopish</button>
+            <button class="orange-btn" onclick="checkGroupPassword()">Кириш</button>
+            <button onclick="document.getElementById('password-modal').style.display='none'; document.getElementById('passInput').value='';" style="width:100%; margin-top:10px; background:transparent; color:white; border:none; cursor:pointer;">Бекор қилиш</button>
         </div>
     </div>
 </body>

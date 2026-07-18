@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gold Shield | Global Platform</title>
+    <!-- EmailJS kutubxonasi -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: linear-gradient(135deg, #fd51a7 30%, #1a1a24 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
@@ -25,11 +27,9 @@
     <h2 id="title">Gold Shield International</h2>
     <p id="desc" style="margin-bottom: 30px; color: gold;">Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.</p>
 
-    <!-- Email kiritish -->
     <input type="email" id="emailInput" class="input-field" placeholder="Pochtangizni kiriting...">
     <button id="sendBtn" class="google-btn" onclick="sendVerification()">Tasdiqlash kodini olish</button>
     
-    <!-- Kod kiritish qismi -->
     <div id="code-section" style="display:none; margin-top:20px;">
         <input type="password" id="codeInput" class="input-field" placeholder="Тасдиқлаш кодини киритинг">
         <button onclick="togglePassword()" style="background:none; border:none; color:gold; cursor:pointer; font-size:12px; margin-bottom:10px;">👁️ Кодни кўрсатиш</button>
@@ -39,6 +39,9 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+    // 1. EmailJS ni ishga tushirish
+    emailjs.init("EmjeqopCgeeZoZdMR"); 
 
     const firebaseConfig = {
         apiKey: "AIzaSyAuPWrC2sKYQuukdc5DEGgR2uduou3CX6U",
@@ -50,33 +53,45 @@
     };
     initializeApp(firebaseConfig);
 
-    // Global funksiyalar
-    window.changeLanguage = () => {
-        const lang = document.getElementById("langSelector").value;
-        const trans = {
-            uz: { t: "Gold Shield International", d: "Инсон ҳуқуқлари фаоллари ва журналистлар учун махсус платформа.", b: "Tasdiqlash kodini olish" },
-            ru: { t: "Gold Shield International", d: "Платформа для правозащитников и журналистов.", b: "Получить код" },
-            en: { t: "Gold Shield International", d: "Platform for human rights defenders and journalists.", b: "Get verification code" }
-        };
-        document.getElementById("title").innerText = trans[lang].t;
-        document.getElementById("desc").innerText = trans[lang].d;
-        document.getElementById("sendBtn").innerText = trans[lang].b;
+    let generatedCode = "";
+
+    // 2. FUNKSIYANI OLDIN YOZING
+    const generateCode = () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let result = "";
+        for (let i = 0; i < 6; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
     };
 
+    // 3. Global funksiyalar (Window ga bog'lash)
     window.sendVerification = () => {
         const email = document.getElementById("emailInput").value;
         if(email.includes("@")) {
-            alert("Kod pochtangizga yuborildi (simulyatsiya: 123456)");
-            document.getElementById("code-section").style.display = "block";
-            document.getElementById("sendBtn").style.display = "none";
+            generatedCode = generateCode(); // Endi bu funksiya aniq ko'rinadi
+            
+            // EMAILJS NI BU YERGA QO'YAMIZ
+            emailjs.send("service_5q8ltmp", "template_390cxcc", {
+    message: generatedCode,
+    email: email
+})
+            .then(() => {
+                alert("Kod pochtangizga yuborildi!");
+                document.getElementById("code-section").style.display = "block";
+                document.getElementById("sendBtn").style.display = "none";
+            }).catch((err) => {
+                console.error("EmailJS xatosi:", err);
+                alert("Xatolik yuz berdi.");
+            });
         } else {
             alert("To'g'ri pochta manzilini kiriting!");
         }
     };
 
     window.verifyCode = () => {
-        const code = document.getElementById("codeInput").value;
-        if(code === "123456") {
+        const inputCode = document.getElementById("codeInput").value.toUpperCase();
+        if(inputCode === generatedCode && inputCode !== "") {
             window.location.href = "chat.html";
         } else {
             alert("Kod xato!");
